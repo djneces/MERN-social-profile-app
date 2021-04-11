@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require('config');
 //validation via express-validator
 const { check, validationResult } = require('express-validator');
 
@@ -62,11 +64,28 @@ router.post(
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(password, salt);
 
-      //saving user
+      //saving user in the DB
       await user.save();
+      //after saving MongoDB gives us _id, which Mongoose takes as id => we can use user.id
 
       //return jsonwebtoken
-      res.send('User registered');
+      const payload = {
+        user: {
+          id: user.id,
+        },
+      };
+
+      //we take user.id, the secret from default.json and sign with jwt
+      jwt.sign(
+        payload,
+        config.get('jwtSecret'),
+        { expiresIn: 360000 },
+        (err, token) => {
+          if (err) throw err;
+          //if no error we want to send the token
+          res.json({ token });
+        }
+      );
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error');
