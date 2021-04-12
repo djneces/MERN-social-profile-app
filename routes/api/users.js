@@ -52,7 +52,7 @@ router.post(
         d: 'mm',
       });
 
-      //NEW user
+      //NEW user - instatiate with new User()
       user = new User({
         name,
         email,
