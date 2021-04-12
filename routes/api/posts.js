@@ -215,7 +215,6 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
     const comment = post.comments.find(
       (comment) => comment.id === req.params.comment_id
     );
-    console.log('my log', comment);
 
     //make sure comment exists
     if (!comment) {
