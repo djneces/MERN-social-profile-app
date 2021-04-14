@@ -7,6 +7,7 @@ const { check, validationResult } = require('express-validator');
 
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const Post = require('../../models/Post');
 
 //@route GET api/profile/me
 //@desc My profile route
@@ -78,7 +79,9 @@ router.post(
     if (githubusername) profileFields.githubusername = githubusername;
     if (skills) {
       //we need to convert it into array, trim spaces (people might put or not)
-      profileFields.skills = skills.split(',').map((skill) => skill.trim());
+      profileFields.skills = Array.isArray(skills)
+        ? skills.map((skill) => skill.trim())
+        : skills.split(',').map((skill) => skill.trim());
     }
 
     //build social object
@@ -157,6 +160,8 @@ router.get('/user/:user_id', async (req, res) => {
 
 router.delete('/', auth, async (req, res) => {
   try {
+    //remove user's posts
+    await Post.deleteMany({ user: req.user.id });
     //remove profile
     await Profile.findOneAndRemove({ user: req.user.id });
     //remove user
