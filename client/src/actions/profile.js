@@ -33,7 +33,7 @@ export const getCurrentProfile = () => async (dispatch) => {
 
 export const getProfiles = () => async (dispatch) => {
   //CLEAR_PROFILE prevents past users flashing profile, may not be necessary
-  dispatch({ type: CLEAR_PROFILE });
+  // dispatch({ type: CLEAR_PROFILE });
   try {
     const res = await axios.get('/api/profile');
 
